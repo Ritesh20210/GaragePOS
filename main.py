@@ -178,22 +178,22 @@ def main(page: ft.Page):
             ft.Text("Point of Sale", size=24, weight=ft.FontWeight.BOLD),
             pos_client_dropdown, 
             ft.Row([pos_item_dropdown, pos_qty]),
-            ft.ElevatedButton("Add to Cart", on_click=add_to_cart, icon=ft.Icons.ADD_SHOPPING_CART, width=float('inf')),
+            ft.Button(content="Add to Cart", on_click=add_to_cart, icon=ft.Icons.ADD_SHOPPING_CART, width=float('inf')),
             ft.Divider(), cart_list, pos_discount, total_text,
-            ft.ElevatedButton("Checkout & WhatsApp", on_click=checkout_and_whatsapp, bgcolor=ft.Colors.GREEN_700, color=ft.Colors.WHITE, height=50, width=float('inf'), icon=ft.Icons.SEND)
+            ft.Button(content="Checkout & WhatsApp", on_click=checkout_and_whatsapp, bgcolor=ft.Colors.GREEN_700, color=ft.Colors.WHITE, height=50, width=float('inf'), icon=ft.Icons.SEND)
         ], expand=True, visible=True)
 
         inventory_view = ft.Column([
             ft.Text("Inventory Management", size=24, weight=ft.FontWeight.BOLD),
             ft.Row([inv_name]), ft.Row([inv_price, inv_stock]),
-            ft.ElevatedButton("Save Purchase", on_click=add_inventory, icon=ft.Icons.SAVE, width=float('inf')),
+            ft.Button(content="Save Purchase", on_click=add_inventory, icon=ft.Icons.SAVE, width=float('inf')),
             ft.Divider(), ft.Text("Stock Status:", weight=ft.FontWeight.BOLD, size=18), inventory_list
         ], expand=True, visible=False)
 
         client_view = ft.Column([
             ft.Text("Client Registry", size=24, weight=ft.FontWeight.BOLD),
             client_name, client_mobile, client_gadi,
-            ft.ElevatedButton("Register Client", on_click=add_client, icon=ft.Icons.PERSON_ADD, width=float('inf')),
+            ft.Button(content="Register Client", on_click=add_client, icon=ft.Icons.PERSON_ADD, width=float('inf')),
             ft.Divider(), ft.Text("Database:", weight=ft.FontWeight.BOLD, size=18), client_list
         ], expand=True, visible=False)
 
@@ -251,7 +251,7 @@ def main(page: ft.Page):
 
         username_input = ft.TextField(label="Username", prefix_icon=ft.Icons.PERSON, width=300)
         password_input = ft.TextField(label="Password", prefix_icon=ft.Icons.LOCK, password=True, can_reveal_password=True, width=300)
-        login_btn = ft.ElevatedButton("Login", on_click=handle_login, width=300, height=45, bgcolor=ft.Colors.BLUE_800, color=ft.Colors.WHITE)
+        login_btn = ft.Button(content="Login", on_click=handle_login, width=300, height=45, bgcolor=ft.Colors.BLUE_800, color=ft.Colors.WHITE)
 
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER

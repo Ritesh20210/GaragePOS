@@ -20,6 +20,11 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.6'
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:

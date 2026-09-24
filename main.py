@@ -273,4 +273,4 @@ def main(page: ft.Page):
             ft.Text(traceback.format_exc(), color=ft.colors.RED, selectable=True)
         )
 
-ft.app(target=main)
+ft.run(main)

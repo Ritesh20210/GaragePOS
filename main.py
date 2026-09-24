@@ -4,43 +4,46 @@ import urllib.parse
 import os
 
 # ==========================================
-# 1. DATABASE SETUP (OFFLINE SQLITE - ANDROID SAFE)
-# ==========================================
-def init_db():
-    db_folder = os.environ.get('HOME', os.path.abspath('.'))
-    db_path = os.path.join(db_folder, "garage_pos.db")
-    
-    conn = sqlite3.connect(db_path, check_same_thread=False)
-    cursor = conn.cursor()
-    
-    cursor.execute('''CREATE TABLE IF NOT EXISTS inventory (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        item_name TEXT,
-                        price REAL,
-                        stock INTEGER)''')
-                        
-    cursor.execute('''CREATE TABLE IF NOT EXISTS clients (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        name TEXT,
-                        mobile TEXT,
-                        gadi_no TEXT)''')
-    conn.commit()
-    return conn
-
-conn = init_db()
-
-# ==========================================
-# 2. MAIN GUI APPLICATION
+# MAIN GUI APPLICATION & DATABASE SETUP
 # ==========================================
 def main(page: ft.Page):
     page.title = "Auto Workshop Garage POS"
     page.window.width = 400
     page.window.height = 800
     page.theme_mode = ft.ThemeMode.LIGHT
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     
+    # --- 1. SAFELY INITIALIZE DATABASE ON ANDROID ---
+    try:
+        # Try HOME first, fallback to TMPDIR (temporary Android storage), then current directory
+        db_folder = os.environ.get('HOME', os.environ.get('TMPDIR', os.path.abspath('.')))
+        db_path = os.path.join(db_folder, "garage_pos.db")
+        
+        conn = sqlite3.connect(db_path, check_same_thread=False)
+        cursor = conn.cursor()
+        
+        cursor.execute('''CREATE TABLE IF NOT EXISTS inventory (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            item_name TEXT,
+                            price REAL,
+                            stock INTEGER)''')
+                            
+        cursor.execute('''CREATE TABLE IF NOT EXISTS clients (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            name TEXT,
+                            mobile TEXT,
+                            gadi_no TEXT)''')
+        conn.commit()
+    except Exception as e:
+        # IF IT FAILS, SHOW THE EXACT ERROR ON SCREEN INSTEAD OF A BLACK SCREEN
+        page.add(ft.Text(f"Database Error: {str(e)}", color=ft.colors.RED, size=20, weight=ft.FontWeight.BOLD))
+        page.add(ft.Text(f"Attempted Path: {db_path}"))
+        return
+
+    # --- 2. APP VARIABLES & UI ELEMENTS ---
     cart = []
 
-    # --- UI Elements ---
     inv_name = ft.TextField(label="Item Name", prefix_icon=ft.icons.BUILD)
     inv_price = ft.TextField(label="Selling Price", keyboard_type=ft.KeyboardType.NUMBER, prefix_icon=ft.icons.MONETIZATION_ON)
     inv_stock = ft.TextField(label="Stock Qty", keyboard_type=ft.KeyboardType.NUMBER, prefix_icon=ft.icons.LAYERS)
@@ -58,7 +61,7 @@ def main(page: ft.Page):
     cart_list = ft.ListView(expand=True, spacing=10)
     total_text = ft.Text("Total: Rs. 0", size=22, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_900)
 
-    # --- Logic ---
+    # --- 3. LOGIC FUNCTIONS ---
     def refresh_data():
         cursor = conn.cursor()
         
@@ -194,7 +197,7 @@ def main(page: ft.Page):
 
     pos_discount.on_change = lambda e: update_cart_ui()
 
-    # --- Screen Views ---
+    # --- 4. SCREEN VIEWS ---
     pos_view = ft.Column([
         ft.Text("Point of Sale", size=24, weight=ft.FontWeight.BOLD),
         pos_client_dropdown, ft.Row([pos_item_dropdown, pos_qty]),
@@ -217,17 +220,14 @@ def main(page: ft.Page):
         ft.Divider(), ft.Text("Database:", weight=ft.FontWeight.BOLD, size=18), client_list
     ], expand=True, visible=False)
 
-    # Main container to hold the active view
     main_content = ft.Container(content=ft.Column([pos_view, inventory_view, client_view], expand=True), padding=15, expand=True)
 
-    # --- Sidebar (Navigation Drawer) Logic ---
+    # --- 5. SIDEBAR (NAVIGATION DRAWER) ---
     def handle_drawer_change(e):
-        # Hide all views
         pos_view.visible = False
         inventory_view.visible = False
         client_view.visible = False
         
-        # Show selected view
         if e.control.selected_index == 0:
             pos_view.visible = True
             page.appbar.title.value = "Sales & POS"
@@ -238,7 +238,6 @@ def main(page: ft.Page):
             client_view.visible = True
             page.appbar.title.value = "Clients"
             
-        # Automatically close the sidebar like butter
         page.drawer.open = False
         page.update()
 
@@ -263,17 +262,13 @@ def main(page: ft.Page):
         bgcolor=ft.colors.BLUE_800
     )
 
-    # --- Login Screen ---
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-
+    # --- 6. LOGIN SCREEN ---
     def handle_login(e):
         if username_input.value == "admin" and password_input.value == "Salam123":
             page.controls.clear()
             page.vertical_alignment = ft.MainAxisAlignment.START
             page.horizontal_alignment = ft.CrossAxisAlignment.START
             
-            # Add Sidebar and Header
             page.drawer = app_drawer
             page.appbar = main_app_bar
             page.add(main_content)

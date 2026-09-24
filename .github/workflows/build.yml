@@ -23,14 +23,14 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.6'
+          channel: 'stable'
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install Requirements
+      - name: Install Flet
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -38,7 +38,7 @@ jobs:
       - name: Build Flet APK
         run: yes | flet build apk
 
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: GaragePOS-APK

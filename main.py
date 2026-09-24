@@ -2,6 +2,7 @@ import flet as ft
 import sqlite3
 import urllib.parse
 import os
+import tempfile
 import traceback
 
 def main(page: ft.Page):
@@ -11,8 +12,7 @@ def main(page: ft.Page):
         page.theme_mode = ft.ThemeMode.LIGHT
         
         # --- 2. SECURE ANDROID DATABASE ---
-        # Ensures SQLite creates the database in a writable Android folder
-        db_folder = os.environ.get("HOME", os.path.abspath("."))
+        db_folder = os.environ.get("HOME", tempfile.gettempdir())
         db_path = os.path.join(db_folder, "garage_pos.db")
         
         conn = sqlite3.connect(db_path, check_same_thread=False)
@@ -30,14 +30,14 @@ def main(page: ft.Page):
         # --- 3. UI VARIABLES ---
         cart = []
 
-        inv_name = ft.TextField(label="Item Name", prefix_icon=ft.icons.BUILD, expand=True)
+        inv_name = ft.TextField(label="Item Name", prefix_icon=ft.Icons.BUILD, expand=True)
         inv_price = ft.TextField(label="Price (Rs)", keyboard_type=ft.KeyboardType.NUMBER, expand=True)
         inv_stock = ft.TextField(label="Qty", keyboard_type=ft.KeyboardType.NUMBER, expand=True)
         inventory_list = ft.ListView(expand=True, spacing=10)
 
-        client_name = ft.TextField(label="Client Name", prefix_icon=ft.icons.PERSON)
-        client_mobile = ft.TextField(label="Mobile No.", keyboard_type=ft.KeyboardType.PHONE, prefix_icon=ft.icons.PHONE)
-        client_gadi = ft.TextField(label="Vehicle No. (ex: BA 1 PA 1234)", prefix_icon=ft.icons.DIRECTIONS_CAR)
+        client_name = ft.TextField(label="Client Name", prefix_icon=ft.Icons.PERSON)
+        client_mobile = ft.TextField(label="Mobile No.", keyboard_type=ft.KeyboardType.PHONE, prefix_icon=ft.Icons.PHONE)
+        client_gadi = ft.TextField(label="Vehicle No. (ex: BA 1 PA 1234)", prefix_icon=ft.Icons.DIRECTIONS_CAR)
         client_list = ft.ListView(expand=True, spacing=10)
 
         pos_client_dropdown = ft.Dropdown(label="Select Client")
@@ -45,7 +45,7 @@ def main(page: ft.Page):
         pos_qty = ft.TextField(label="Qty", value="1", width=80, keyboard_type=ft.KeyboardType.NUMBER)
         pos_discount = ft.TextField(label="Discount (Rs)", value="0", keyboard_type=ft.KeyboardType.NUMBER)
         cart_list = ft.ListView(expand=True, spacing=10)
-        total_text = ft.Text("Total: Rs. 0", size=24, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_900)
+        total_text = ft.Text("Total: Rs. 0", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900)
 
         # --- 4. APP LOGIC ---
         def refresh_data():
@@ -60,7 +60,7 @@ def main(page: ft.Page):
                     ft.ListTile(
                         title=ft.Text(f"{row[1]} (Stock: {row[3]})", weight=ft.FontWeight.BOLD),
                         subtitle=ft.Text(f"Rs. {row[2]}"),
-                        trailing=ft.IconButton(ft.icons.DELETE, icon_color=ft.colors.RED, on_click=lambda e, i=row[0]: delete_item(i))
+                        trailing=ft.IconButton(ft.Icons.DELETE, icon_color=ft.Colors.RED, on_click=lambda e, i=row[0]: delete_item(i))
                     )
                 )
                 pos_item_dropdown.options.append(ft.dropdown.Option(key=str(row[0]), text=f"{row[1]} - Rs.{row[2]}"))
@@ -72,7 +72,7 @@ def main(page: ft.Page):
             for row in cursor.fetchall():
                 client_list.controls.append(
                     ft.ListTile(
-                        leading=ft.Icon(ft.icons.DIRECTIONS_CAR),
+                        leading=ft.Icon(ft.Icons.DIRECTIONS_CAR),
                         title=ft.Text(f"{row[3]} - {row[1]}", weight=ft.FontWeight.BOLD), 
                         subtitle=ft.Text(row[2])
                     )
@@ -169,7 +169,7 @@ def main(page: ft.Page):
             page.launch_url(wa_url)
 
         def show_snack(text, is_error=False):
-            page.open(ft.SnackBar(content=ft.Text(text), bgcolor=ft.colors.RED_700 if is_error else ft.colors.GREEN_700))
+            page.open(ft.SnackBar(content=ft.Text(text), bgcolor=ft.Colors.RED_700 if is_error else ft.Colors.GREEN_700))
 
         pos_discount.on_change = lambda e: update_cart_ui()
 
@@ -178,22 +178,22 @@ def main(page: ft.Page):
             ft.Text("Point of Sale", size=24, weight=ft.FontWeight.BOLD),
             pos_client_dropdown, 
             ft.Row([pos_item_dropdown, pos_qty]),
-            ft.ElevatedButton("Add to Cart", on_click=add_to_cart, icon=ft.icons.ADD_SHOPPING_CART, width=float('inf')),
+            ft.ElevatedButton("Add to Cart", on_click=add_to_cart, icon=ft.Icons.ADD_SHOPPING_CART, width=float('inf')),
             ft.Divider(), cart_list, pos_discount, total_text,
-            ft.ElevatedButton("Checkout & WhatsApp", on_click=checkout_and_whatsapp, bgcolor=ft.colors.GREEN_700, color=ft.colors.WHITE, height=50, width=float('inf'), icon=ft.icons.SEND)
+            ft.ElevatedButton("Checkout & WhatsApp", on_click=checkout_and_whatsapp, bgcolor=ft.Colors.GREEN_700, color=ft.Colors.WHITE, height=50, width=float('inf'), icon=ft.Icons.SEND)
         ], expand=True, visible=True)
 
         inventory_view = ft.Column([
             ft.Text("Inventory Management", size=24, weight=ft.FontWeight.BOLD),
             ft.Row([inv_name]), ft.Row([inv_price, inv_stock]),
-            ft.ElevatedButton("Save Purchase", on_click=add_inventory, icon=ft.icons.SAVE, width=float('inf')),
+            ft.ElevatedButton("Save Purchase", on_click=add_inventory, icon=ft.Icons.SAVE, width=float('inf')),
             ft.Divider(), ft.Text("Stock Status:", weight=ft.FontWeight.BOLD, size=18), inventory_list
         ], expand=True, visible=False)
 
         client_view = ft.Column([
             ft.Text("Client Registry", size=24, weight=ft.FontWeight.BOLD),
             client_name, client_mobile, client_gadi,
-            ft.ElevatedButton("Register Client", on_click=add_client, icon=ft.icons.PERSON_ADD, width=float('inf')),
+            ft.ElevatedButton("Register Client", on_click=add_client, icon=ft.Icons.PERSON_ADD, width=float('inf')),
             ft.Divider(), ft.Text("Database:", weight=ft.FontWeight.BOLD, size=18), client_list
         ], expand=True, visible=False)
 
@@ -201,12 +201,10 @@ def main(page: ft.Page):
 
         # --- 6. SIDEBAR NAVIGATION ---
         def handle_drawer_change(e):
-            # Hide all
             pos_view.visible = False
             inventory_view.visible = False
             client_view.visible = False
             
-            # Show selected
             if e.control.selected_index == 0:
                 pos_view.visible = True
                 page.appbar.title.value = "Sales & POS"
@@ -217,7 +215,7 @@ def main(page: ft.Page):
                 client_view.visible = True
                 page.appbar.title.value = "Clients"
                 
-            page.drawer.open = False  # Closes drawer smoothly
+            page.drawer.open = False  
             page.update()
 
         app_drawer = ft.NavigationDrawer(
@@ -225,16 +223,16 @@ def main(page: ft.Page):
             selected_index=0,
             controls=[
                 ft.Container(height=20),
-                ft.NavigationDrawerDestination(label="POS & Sales", icon=ft.icons.POINT_OF_SALE),
-                ft.NavigationDrawerDestination(label="Inventory", icon=ft.icons.INVENTORY),
-                ft.NavigationDrawerDestination(label="Clients", icon=ft.icons.PEOPLE),
+                ft.NavigationDrawerDestination(label="POS & Sales", icon=ft.Icons.POINT_OF_SALE),
+                ft.NavigationDrawerDestination(label="Inventory", icon=ft.Icons.INVENTORY),
+                ft.NavigationDrawerDestination(label="Clients", icon=ft.Icons.PEOPLE),
             ],
         )
 
         main_app_bar = ft.AppBar(
-            leading=ft.IconButton(ft.icons.MENU, on_click=lambda e: setattr(page.drawer, 'open', True) or page.update(), icon_color=ft.colors.WHITE),
-            title=ft.Text("Sales & POS", color=ft.colors.WHITE),
-            bgcolor=ft.colors.BLUE_800
+            leading=ft.IconButton(ft.Icons.MENU, on_click=lambda e: setattr(page.drawer, 'open', True) or page.update(), icon_color=ft.Colors.WHITE),
+            title=ft.Text("Sales & POS", color=ft.Colors.WHITE),
+            bgcolor=ft.Colors.BLUE_800
         )
 
         # --- 7. LOGIN SCREEN ---
@@ -251,26 +249,25 @@ def main(page: ft.Page):
             else:
                 show_snack("Invalid Login!", is_error=True)
 
-        username_input = ft.TextField(label="Username", prefix_icon=ft.icons.PERSON, width=300)
-        password_input = ft.TextField(label="Password", prefix_icon=ft.icons.LOCK, password=True, can_reveal_password=True, width=300)
-        login_btn = ft.ElevatedButton("Login", on_click=handle_login, width=300, height=45, bgcolor=ft.colors.BLUE_800, color=ft.colors.WHITE)
+        username_input = ft.TextField(label="Username", prefix_icon=ft.Icons.PERSON, width=300)
+        password_input = ft.TextField(label="Password", prefix_icon=ft.Icons.LOCK, password=True, can_reveal_password=True, width=300)
+        login_btn = ft.ElevatedButton("Login", on_click=handle_login, width=300, height=45, bgcolor=ft.Colors.BLUE_800, color=ft.Colors.WHITE)
 
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.add(ft.Column([
-            ft.Icon(ft.icons.GARAGE, size=80, color=ft.colors.BLUE_800),
+            ft.Icon(ft.Icons.GARAGE, size=80, color=ft.Colors.BLUE_800),
             ft.Text("Garage POS", size=28, weight=ft.FontWeight.BOLD),
             ft.Container(height=20), username_input, password_input, ft.Container(height=10), login_btn
         ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER))
 
     except Exception as e:
-        # Fallback error screen so you NEVER see a black screen
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.add(
-            ft.Icon(ft.icons.ERROR, color=ft.colors.RED, size=60),
-            ft.Text("App Failed to Load", size=22, weight=ft.FontWeight.BOLD, color=ft.colors.RED),
-            ft.Text(traceback.format_exc(), color=ft.colors.RED, selectable=True)
+            ft.Icon(ft.Icons.ERROR, color=ft.Colors.RED, size=60),
+            ft.Text("App Failed to Load", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.RED),
+            ft.Text(traceback.format_exc(), color=ft.Colors.RED, selectable=True)
         )
 
 ft.run(main)

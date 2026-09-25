@@ -12,7 +12,7 @@ def main(page: ft.Page):
         page.theme_mode = ft.ThemeMode.LIGHT
         page.padding = 0
         
-        # --- 2. SECURE ANDROID DATABASE ---
+        # --- 2. SECURE DATABASE ---
         db_folder = os.environ.get("HOME", tempfile.gettempdir())
         db_path = os.path.join(db_folder, "garage_pos.db")
         
@@ -28,7 +28,7 @@ def main(page: ft.Page):
                             name TEXT, mobile TEXT, gadi_no TEXT)''')
         conn.commit()
 
-        # --- 3. SMART SNACKBAR (CRASH-PROOF) ---
+        # --- 3. SMART SNACKBAR ---
         def show_snack(text, is_error=False):
             color = ft.Colors.RED_700 if is_error else ft.Colors.GREEN_700
             snack = ft.SnackBar(content=ft.Text(text, color=ft.Colors.WHITE), bgcolor=color)
@@ -200,7 +200,7 @@ def main(page: ft.Page):
             ft.Divider(), ft.Text("Database:", weight=ft.FontWeight.BOLD, size=18), client_list
         ], expand=True), padding=15, visible=False)
 
-        # --- 8. LIGHT-SPEED CUSTOM SIDEBAR (AUTO-HIDE) ---
+        # --- 8. LIGHT-SPEED CUSTOM SIDEBAR ---
         def switch_tab(tab_name):
             pos_view.visible = (tab_name == "pos")
             inventory_view.visible = (tab_name == "inv")
@@ -240,7 +240,6 @@ def main(page: ft.Page):
             ])
         )
 
-        # FIXED BLACK_54 SPELLING HERE
         overlay_bg = ft.Container(expand=True, left=0, right=0, top=0, bottom=0, bgcolor=ft.Colors.BLACK_54, visible=False, on_click=toggle_sidebar)
 
         main_app_bar = ft.AppBar(
@@ -253,7 +252,7 @@ def main(page: ft.Page):
             overlay_bg, sidebar
         ], expand=True)
 
-        # --- 9. LOGIN SCREEN ---
+        # --- 9. LOGIN SCREEN (FIXED CENTER ALIGNMENT) ---
         def handle_login(e):
             if username_input.value == "admin" and password_input.value == "Salam123":
                 page.controls.clear()
@@ -272,7 +271,7 @@ def main(page: ft.Page):
                 ft.Container(height=20), username_input, password_input, ft.Container(height=10),
                 custom_btn("Login", ft.Icons.LOGIN, ft.Colors.BLUE_800, handle_login)
             ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-            alignment=ft.alignment.center, expand=True
+            alignment=ft.alignment.CENTER, expand=True  # FIXED HERE FOR FLET 1.0
         )
 
         page.add(login_view)

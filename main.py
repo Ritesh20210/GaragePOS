@@ -10,7 +10,7 @@ def main(page: ft.Page):
         # --- 1. APP SETUP ---
         page.title = "Auto Workshop Garage POS"
         page.theme_mode = ft.ThemeMode.LIGHT
-        page.padding = 0  # To allow the custom sidebar to span the whole screen
+        page.padding = 0
         
         # --- 2. SECURE ANDROID DATABASE ---
         db_folder = os.environ.get("HOME", tempfile.gettempdir())
@@ -229,7 +229,6 @@ def main(page: ft.Page):
 
         sidebar = ft.Container(
             width=250, left=-250, top=0, bottom=0, bgcolor=ft.Colors.WHITE,
-            # FIXED ANIMATION HERE FOR FLET 1.0
             animate_position=ft.Animation(250, ft.AnimationCurve.EASE_OUT),
             content=ft.Column([
                 ft.Container(height=60, bgcolor=ft.Colors.BLUE_800, padding=10, content=ft.Row([ft.Icon(ft.Icons.GARAGE, color=ft.Colors.WHITE, size=30), ft.Text("Menu", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)])),
@@ -241,7 +240,8 @@ def main(page: ft.Page):
             ])
         )
 
-        overlay_bg = ft.Container(expand=True, left=0, right=0, top=0, bottom=0, bgcolor=ft.Colors.BLACK54, visible=False, on_click=toggle_sidebar)
+        # FIXED BLACK_54 SPELLING HERE
+        overlay_bg = ft.Container(expand=True, left=0, right=0, top=0, bottom=0, bgcolor=ft.Colors.BLACK_54, visible=False, on_click=toggle_sidebar)
 
         main_app_bar = ft.AppBar(
             leading=ft.IconButton(ft.Icons.MENU, on_click=toggle_sidebar, icon_color=ft.Colors.WHITE),

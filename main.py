@@ -32,7 +32,6 @@ def main(page: ft.Page):
         def show_snack(text, is_error=False):
             color = ft.Colors.RED_700 if is_error else ft.Colors.GREEN_700
             snack = ft.SnackBar(content=ft.Text(text, color=ft.Colors.WHITE), bgcolor=color)
-            # Checks what version of Flet is running and uses the correct method instantly
             if hasattr(page, 'open'):
                 page.open(snack)
             else:
@@ -40,7 +39,7 @@ def main(page: ft.Page):
                 page.snack_bar.open = True
                 page.update()
 
-        # --- 4. BULLETPROOF BUTTONS (No lag, no crashes) ---
+        # --- 4. BULLETPROOF BUTTONS ---
         def custom_btn(text, icon, color, on_click):
             return ft.Container(
                 content=ft.Row([ft.Icon(icon, color=ft.Colors.WHITE), ft.Text(text, color=ft.Colors.WHITE, size=16, weight=ft.FontWeight.BOLD)], alignment=ft.MainAxisAlignment.CENTER),
@@ -211,7 +210,7 @@ def main(page: ft.Page):
             elif tab_name == "inv": page.appbar.title.value = "Inventory Management"
             elif tab_name == "client": page.appbar.title.value = "Client Registry"
             
-            toggle_sidebar(None) # Automatically close sidebar!
+            toggle_sidebar(None)
 
         def toggle_sidebar(e):
             if sidebar.left == 0:
@@ -230,7 +229,8 @@ def main(page: ft.Page):
 
         sidebar = ft.Container(
             width=250, left=-250, top=0, bottom=0, bgcolor=ft.Colors.WHITE,
-            animate_position=ft.animation.Animation(250, ft.AnimationCurve.EASE_OUT),
+            # FIXED ANIMATION HERE FOR FLET 1.0
+            animate_position=ft.Animation(250, ft.AnimationCurve.EASE_OUT),
             content=ft.Column([
                 ft.Container(height=60, bgcolor=ft.Colors.BLUE_800, padding=10, content=ft.Row([ft.Icon(ft.Icons.GARAGE, color=ft.Colors.WHITE, size=30), ft.Text("Menu", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)])),
                 ft.ListTile(leading=ft.Icon(ft.Icons.POINT_OF_SALE, color=ft.Colors.BLUE_800), title=ft.Text("POS & Sales", weight=ft.FontWeight.BOLD), on_click=lambda e: switch_tab("pos")),
